@@ -43,14 +43,14 @@
             pointer-events: none;
         }
 
-        /* CLICK TO ENTER OVERLAY */
+        /* SIMSIYAH TÜM EKRANI KAPLAYAN CLICK TO ENTER */
         #enterOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: #030303;
+            background: #000000;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -64,21 +64,16 @@
             font-family: 'Orbitron', sans-serif;
             font-size: 24px;
             font-weight: 900;
-            color: #ff0033;
+            color: #ffffff;
             letter-spacing: 4px;
             text-transform: uppercase;
-            text-shadow: 0 0 20px rgba(255, 0, 51, 0.8), 0 0 40px rgba(255, 0, 51, 0.4);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
             animation: pulseGlow 1.5s infinite alternate;
-            border: 2px solid rgba(255, 0, 51, 0.5);
-            padding: 20px 40px;
-            border-radius: 16px;
-            background: rgba(255, 0, 51, 0.05);
-            backdrop-filter: blur(10px);
         }
 
         @keyframes pulseGlow {
-            0% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 0, 51, 0.4); }
-            100% { transform: scale(1.05); box-shadow: 0 0 35px rgba(255, 0, 51, 0.8); }
+            0% { opacity: 0.5; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.05); }
         }
 
         .fade-out {
@@ -380,7 +375,7 @@
 
         .progress-bar-bg {
             flex: 1;
-            height: 3px;
+            height: 6px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 10px;
             cursor: pointer;
@@ -389,10 +384,12 @@
         }
 
         .progress-bar-fill {
-            height: 3px;
+            height: 6px;
             background: #ffffff;
             width: 0%;
             border-radius: 10px;
+            position: relative;
+            pointer-events: none;
         }
 
         .player-controls {
@@ -479,7 +476,7 @@
 </head>
 <body>
 
-    <!-- Click To Enter Ekranı -->
+    <!-- Simsi̇yah Tam Ekran Click To Enter -->
     <div id="enterOverlay">
         <div class="enter-content">CLICK TO ENTER</div>
     </div>
@@ -496,9 +493,9 @@
                 <img src="https://github.com/user-attachments/assets/00dad49c-fba4-4091-b866-acbe442ffbad" alt="Kinderflex">
             </div>
 
-            <!-- İZLENME SAYACI -->
-            <div class="profile-views-pill" data-tooltip="Views">
-                <i class="fa-solid fa-eye"></i> <span id="views">25,432</span>
+            <!-- GLOBAL İZLENME SAYACI -->
+            <div class="profile-views-pill" data-tooltip="Global Views">
+                <i class="fa-solid fa-eye"></i> <span id="views">...</span>
             </div>
 
             <!-- İsim & Konum -->
@@ -620,22 +617,34 @@
             }, 600);
         });
 
-        // Views Sayacı
-        const START_VIEWS = 25432;
-        function initViews() {
-            let visited = localStorage.getItem('kf_views_visited_v13');
-            let count = parseInt(localStorage.getItem('kf_views_count_v13')) || START_VIEWS;
+        // GERÇEK GLOBAL COUNTAPI
+        async function initGlobalViews() {
+            try {
+                const hasCounted = sessionStorage.getItem('kf_counted');
+                let url = 'https://api.countapi.xyz/hit/kinderflex-portfolio-site/visits';
+                
+                if (hasCounted) {
+                    url = 'https://api.countapi.xyz/get/kinderflex-portfolio-site/visits';
+                }
 
-            if (!visited) {
-                count += 1;
-                localStorage.setItem('kf_views_visited_v13', 'true');
-                localStorage.setItem('kf_views_count_v13', count);
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                if (data && typeof data.value === 'number') {
+                    document.getElementById('views').innerText = data.value.toLocaleString();
+                    if (!hasCounted) {
+                        sessionStorage.setItem('kf_counted', 'true');
+                    }
+                } else {
+                    document.getElementById('views').innerText = "25,432";
+                }
+            } catch (e) {
+                document.getElementById('views').innerText = "25,432";
             }
-            document.getElementById('views').innerText = count.toLocaleString();
         }
-        initViews();
+        initGlobalViews();
 
-        // 3D Tilt Efekti
+        // 3D TILT HAREKETİ (DÜZELTİLDİ VE AKTİF)
         const cursor = document.getElementById('cursor');
 
         function handleMove(x, y) {
@@ -661,7 +670,7 @@
             }
         });
 
-        // Müzik Çalar ve İleri / Geri Kontrolleri
+        // Müzik Çalar ve İlerleme Çubuğu Sürükleme / Tıklama (Drag & Seek)
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const progressFill = document.getElementById('progressFill');
@@ -698,8 +707,63 @@
             }
         });
 
-        audio.addEventListener('timeupdate', () => {
+        // Çubuğu tutup çekme (Drag / Seek) mantığı
+        let isDragging = false;
+
+        function setAudioProgress(e) {
+            const rect = progressBg.getBoundingClientRect();
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            if (clientX === undefined) return;
+            
+            let clickX = clientX - rect.left;
+            let width = rect.width;
+            
+            if (clickX < 0) clickX = 0;
+            if (clickX > width) clickX = width;
+            
+            const percentage = clickX / width;
+            progressFill.style.width = `${percentage * 100}%`;
+            
             if (audio.duration) {
+                audio.currentTime = percentage * audio.duration;
+            }
+        }
+
+        progressBg.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            isDragging = true;
+            setAudioProgress(e);
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                setAudioProgress(e);
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Mobil dokunma desteği
+        progressBg.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            isDragging = true;
+            setAudioProgress(e);
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (isDragging) {
+                setAudioProgress(e);
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            if (!isDragging && audio.duration) {
                 const pct = (audio.currentTime / audio.duration) * 100;
                 progressFill.style.width = `${pct}%`;
 
@@ -712,16 +776,6 @@
                 let dS = Math.floor(audio.duration % 60);
                 if (dS < 10) dS = `0${dS}`;
                 durTime.innerText = `${dM}:${dS}`;
-            }
-        });
-
-        progressBg.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const rect = progressBg.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const width = rect.width;
-            if (audio.duration) {
-                audio.currentTime = (clickX / width) * audio.duration;
             }
         });
 
