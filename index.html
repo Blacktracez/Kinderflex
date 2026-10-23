@@ -87,7 +87,7 @@
             object-fit: cover;
         }
 
-        /* HD KALİTELİ ORBITRON YAZI STİLLİ İZLENME SAYACI (PROFiL RESMİNİN ALTI) */
+        /* İZLENME SAYACI */
         .profile-views-pill {
             background: rgba(255, 0, 51, 0.15);
             border: 1px solid rgba(255, 0, 51, 0.5);
@@ -139,7 +139,7 @@
             color: #ff0033;
         }
 
-        /* ROZETLER (BADGES) */
+        /* ROZETLER */
         .badges-container {
             display: flex;
             align-items: center;
@@ -434,12 +434,12 @@
     <div class="card-wrapper" id="cardWrapper">
         <div class="main-card">
 
-            <!-- Profil Resmi -->
+            <!-- Profil Resmi (Güncellendi) -->
             <div class="avatar-box" data-tooltip="Kinderflex">
-                <img src="kinderaskm.jpg" alt="Kinderflex">
+                <img src="https://github.com/user-attachments/assets/00dad49c-fba4-4091-b866-acbe442ffbad" alt="Kinderflex">
             </div>
 
-            <!-- PROFiL RESMİNİN TAM ALTINA YERLEŞTİRİLEN DENGELİ İZLENME SAYACI -->
+            <!-- İZLENME SAYACI -->
             <div class="profile-views-pill" data-tooltip="Views">
                 <i class="fa-solid fa-eye"></i> <span id="views">25,432</span>
             </div>
@@ -450,19 +450,17 @@
                 <i class="fa-solid fa-location-dot"></i> Paris
             </div>
 
-            <!-- SADECE PREMİUM VE BLACKTRACE MEMBER ROZETLERİ -->
+            <!-- ROZETLER -->
             <div class="badges-container">
-                <!-- Premium (Özel Elmas Logosu) -->
                 <div class="badge-item" data-tooltip="Premium">
                     <img src="https://github.com/user-attachments/assets/21b7d102-2bfc-4cc6-81de-058f428ac89f" class="badge-img" alt="Premium">
                 </div>
-                <!-- Blacktrace Member (Özel Logo) -->
                 <div class="badge-item" data-tooltip="Blacktrace Member">
                     <img src="https://github.com/user-attachments/assets/d5b43a0e-974d-43db-a040-ab30472cce4f" class="badge-img" alt="Blacktrace">
                 </div>
             </div>
 
-            <!-- Discord Profil Kartı (Durum Noktası Kaldırıldı) -->
+            <!-- Discord Profil Kartı -->
             <div class="discord-card-widget">
                 <div class="dc-avatar-wrap">
                     <img id="dcAvatar" src="https://github.com/user-attachments/assets/728d2a19-e171-4b8d-b10c-9c60ed2b4975" alt="Discord Profil">
@@ -484,14 +482,15 @@
                 <a href="https://open.spotify.com/user/31s72hg5f7zmqhfdlykr52gpod34?si=YY3NW38WT0WSAi1xVjmBfA&nd=1&dlsi=53d8fb5e60504c36" target="_blank" class="social-btn" data-tooltip="Spotify">
                     <i class="fa-brands fa-spotify"></i>
                 </a>
-                <a href="javascript:void(0)" onclick="copyDiscord()" class="social-btn" data-tooltip="Discord">
+                <!-- Discord Butonu: Direkt Profile Yönlendirir -->
+                <a href="https://discord.com/users/1480208493179834442" target="_blank" class="social-btn" data-tooltip="Discord">
                     <i class="fa-brands fa-discord"></i>
                 </a>
             </div>
 
-            <!-- Müzik Çalar Tasarımı -->
+            <!-- Müzik Çalar Tasarımı (Keso Dayı PP ve Aktif İleri/Geri Tuşları) -->
             <div class="spotify-player">
-                <img src="musicislife.jpg" alt="KESO DAYI" class="player-cover">
+                <img src="https://github.com/user-attachments/assets/c7a8e53d-8c54-4936-ad02-39c96d11e7e7" alt="KESO DAYI" class="player-cover">
                 
                 <div class="player-middle">
                     <div class="song-name">KESO DAYI</div>
@@ -505,9 +504,9 @@
                 </div>
 
                 <div class="player-controls">
-                    <button class="control-btn" id="prevBtn" data-tooltip="Önceki"><i class="fa-solid fa-backward-step"></i></button>
+                    <button class="control-btn" id="prevBtn" data-tooltip="Başa Sar"><i class="fa-solid fa-backward-step"></i></button>
                     <button class="control-btn play-main" id="playBtn" data-tooltip="Oynat / Durdur"><i class="fa-solid fa-play"></i></button>
-                    <button class="control-btn" id="nextBtn" data-tooltip="Sonraki"><i class="fa-solid fa-forward-step"></i></button>
+                    <button class="control-btn" id="nextBtn" data-tooltip="5 Saniye İleri"><i class="fa-solid fa-forward-step"></i></button>
                 </div>
             </div>
 
@@ -517,7 +516,7 @@
     <audio id="audio" src="muzik.mp3" loop></audio>
 
     <script>
-        // YENİ MEKANİK TIKLAMA VE TUŞ SESİ (WEB AUDIO API - TOK MEKANİK SWITCH)
+        // Mekanik Ses Efekti
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         function playMechanicalSwitch() {
@@ -543,7 +542,7 @@
         window.addEventListener('click', playMechanicalSwitch);
         window.addEventListener('keydown', playMechanicalSwitch);
 
-        // Views Sayacı (25,432)
+        // Views Sayacı
         const START_VIEWS = 25432;
         function initViews() {
             let visited = localStorage.getItem('kf_views_visited_v13');
@@ -558,14 +557,7 @@
         }
         initViews();
 
-        // Discord ID Kopyalama
-        function copyDiscord() {
-            navigator.clipboard.writeText("1480208493179834442");
-            alert("Discord ID (1480208493179834442) kopyalandı!");
-            window.open("https://discord.com/users/1480208493179834442", "_blank");
-        }
-
-        // Guns.lol 3D Tilt Efekti
+        // 3D Tilt Efekti
         const cardWrapper = document.getElementById('cardWrapper');
         const cursor = document.getElementById('cursor');
 
@@ -592,9 +584,11 @@
             }
         });
 
-        // Müzik Çalar Kontrolleri
+        // Müzik Çalar ve İleri / Geri Kontrolleri
         const audio = document.getElementById('audio');
         const playBtn = document.getElementById('playBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
         const progressFill = document.getElementById('progressFill');
         const progressBg = document.getElementById('progressBg');
         const currTime = document.getElementById('currTime');
@@ -618,6 +612,24 @@
             } else {
                 audio.pause();
                 playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+            }
+        });
+
+        // Geri Tuşu: Şarkıyı başa sarar
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            audio.currentTime = 0;
+            audio.play();
+            playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        });
+
+        // İleri Tuşu: Şarkıyı 5 saniye ileri sarar
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (audio.duration) {
+                audio.currentTime = Math.min(audio.duration, audio.currentTime + 5);
+                audio.play();
+                playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
             }
         });
 
