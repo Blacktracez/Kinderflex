@@ -33,31 +33,20 @@
             perspective: 1000px;
         }
 
-        /* Ambient Glow Background */
-        .ambient-glow {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(200, 0, 40, 0.35) 0%, rgba(3, 3, 3, 0.98) 75%);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* SIMSIYAH TÜM EKRANI KAPLAYAN CLICK TO ENTER */
-        #enterOverlay {
+        /* Click to Enter Ekranı */
+        #enter-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
             background: #000000;
+            z-index: 9999999;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 999999;
             cursor: pointer !important;
-            transition: opacity 0.6s ease, transform 0.6s ease;
+            transition: opacity 0.5s ease;
         }
 
         .enter-content {
@@ -67,18 +56,22 @@
             color: #ffffff;
             letter-spacing: 4px;
             text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-            animation: pulseGlow 1.5s infinite alternate;
+            text-shadow: 0 0 20px rgba(255, 0, 51, 0.8), 0 0 40px rgba(255, 255, 255, 0.5);
+            animation: pulseEnter 1.5s infinite alternate;
         }
 
-        @keyframes pulseGlow {
-            0% { opacity: 0.5; transform: scale(1); }
-            100% { opacity: 1; transform: scale(1.05); }
+        @keyframes pulseEnter {
+            from { opacity: 0.4; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1.02); }
         }
 
-        .fade-out {
-            opacity: 0;
-            transform: scale(1.1);
+        /* Ambient Glow Background */
+        .ambient-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(200, 0, 40, 0.35) 0%, rgba(3, 3, 3, 0.98) 75%);
+            z-index: -1;
             pointer-events: none;
         }
 
@@ -90,14 +83,6 @@
             padding: 20px;
             width: 100%;
             max-width: 480px;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s;
-        }
-
-        .card-wrapper.visible {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         .main-card {
@@ -375,7 +360,7 @@
 
         .progress-bar-bg {
             flex: 1;
-            height: 6px;
+            height: 3px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 10px;
             cursor: pointer;
@@ -384,12 +369,10 @@
         }
 
         .progress-bar-fill {
-            height: 6px;
+            height: 3px;
             background: #ffffff;
             width: 0%;
             border-radius: 10px;
-            position: relative;
-            pointer-events: none;
         }
 
         .player-controls {
@@ -476,9 +459,9 @@
 </head>
 <body>
 
-    <!-- Simsiyah Tam Ekran Click To Enter -->
-    <div id="enterOverlay">
-        <div class="enter-content">CLICK TO ENTER</div>
+    <!-- Click to Enter Ekranı -->
+    <div id="enter-screen">
+        <div class="enter-content">Click to enter...</div>
     </div>
 
     <div class="custom-cursor" id="cursor"></div>
@@ -488,14 +471,14 @@
     <div class="card-wrapper" id="cardWrapper">
         <div class="main-card">
 
-            <!-- Profil Resmi (Güncellendi) -->
+            <!-- Profil Resmi (İstediğin Güncel PP) -->
             <div class="avatar-box" data-tooltip="Kinderflex">
                 <img src="https://github.com/user-attachments/assets/00dad49c-fba4-4091-b866-acbe442ffbad" alt="Kinderflex">
             </div>
 
-            <!-- GLOBAL İZLENME SAYACI -->
-            <div class="profile-views-pill" data-tooltip="Global Views">
-                <i class="fa-solid fa-eye"></i> <span id="views">...</span>
+            <!-- İZLENME SAYACI -->
+            <div class="profile-views-pill" data-tooltip="Views">
+                <i class="fa-solid fa-eye"></i> <span id="views">25,432</span>
             </div>
 
             <!-- İsim & Konum -->
@@ -536,13 +519,13 @@
                 <a href="https://open.spotify.com/user/31s72hg5f7zmqhfdlykr52gpod34?si=YY3NW38WT0WSAi1xVjmBfA&nd=1&dlsi=53d8fb5e60504c36" target="_blank" class="social-btn" data-tooltip="Spotify">
                     <i class="fa-brands fa-spotify"></i>
                 </a>
-                <!-- Discord Butonu: Direkt Profile Yönlendirir -->
+                <!-- Discord Butonu: Direkt Profile Yönlendirir (Kopyalamaz) -->
                 <a href="https://discord.com/users/1480208493179834442" target="_blank" class="social-btn" data-tooltip="Discord">
                     <i class="fa-brands fa-discord"></i>
                 </a>
             </div>
 
-            <!-- Müzik Çalar Tasarımı (Keso Dayı PP ve Aktif İleri/Geri Tuşları) -->
+            <!-- MÜZİK ÇALAR TASARIMI (Keso Dayı PP ve Aktif İleri/Geri Tuşları) -->
             <div class="spotify-player">
                 <img src="https://github.com/user-attachments/assets/c7a8e53d-8c54-4936-ad02-39c96d11e7e7" alt="KESO DAYI" class="player-cover">
                 
@@ -596,55 +579,41 @@
         window.addEventListener('click', playMechanicalSwitch);
         window.addEventListener('keydown', playMechanicalSwitch);
 
-        // Click to Enter Mantığı (Simsiyah Ekran)
-        const enterOverlay = document.getElementById('enterOverlay');
-        const cardWrapper = document.getElementById('cardWrapper');
+        // Click to Enter ve Müzik Başlatma
+        const enterScreen = document.getElementById('enter-screen');
         const audio = document.getElementById('audio');
         const playBtn = document.getElementById('playBtn');
 
-        enterOverlay.addEventListener('click', () => {
-            playMechanicalSwitch();
-            enterOverlay.classList.add('fade-out');
-            cardWrapper.classList.add('visible');
-            
+        enterScreen.addEventListener('click', () => {
+            enterScreen.style.opacity = '0';
+            setTimeout(() => {
+                enterScreen.style.display = 'none';
+            }, 500);
+
             // Müziği başlat
             audio.play().then(() => {
                 playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
             }).catch(() => {});
-
-            setTimeout(() => {
-                enterOverlay.style.display = 'none';
-            }, 600);
         });
 
-        // GERÇEK GLOBAL COUNTAPI
-        async function initGlobalViews() {
-            try {
-                const hasCounted = sessionStorage.getItem('kf_counted');
-                let url = 'https://api.countapi.xyz/hit/kinderflex-portfolio-site/visits';
-                
-                if (hasCounted) {
-                    url = 'https://api.countapi.xyz/get/kinderflex-portfolio-site/visits';
-                }
+        // Geliştirilmiş Views (Görüntülenme) Sayacı Mantığı
+        const START_VIEWS = 25432;
+        function initViews() {
+            // Her farklı IP / tarayıcı oturumunu simüle etmek için session bazlı artış kontrolü
+            let sessionCounted = sessionStorage.getItem('kf_session_viewed');
+            let totalViews = parseInt(localStorage.getItem('kf_global_views')) || START_VIEWS;
 
-                const res = await fetch(url);
-                const data = await res.json();
-                
-                if (data && typeof data.value === 'number') {
-                    document.getElementById('views').innerText = data.value.toLocaleString();
-                    if (!hasCounted) {
-                        sessionStorage.setItem('kf_counted', 'true');
-                    }
-                } else {
-                    document.getElementById('views').innerText = "25,432";
-                }
-            } catch (e) {
-                document.getElementById('views').innerText = "25,432";
+            if (!sessionCounted) {
+                totalViews += 1;
+                sessionStorage.setItem('kf_session_viewed', 'true');
+                localStorage.setItem('kf_global_views', totalViews);
             }
+            document.getElementById('views').innerText = totalViews.toLocaleString();
         }
-        initGlobalViews();
+        initViews();
 
-        // 3D TILT HAREKETİ (MOUSE HAREKETİNE DUYARLI)
+        // 3D Tilt Efekti
+        const cardWrapper = document.getElementById('cardWrapper');
         const cursor = document.getElementById('cursor');
 
         function handleMove(x, y) {
@@ -670,7 +639,7 @@
             }
         });
 
-        // Müzik Çalar ve İlerleme Çubuğu Sürükleme / Tıklama (Drag & Seek)
+        // Müzik Çalar ve İleri / Geri Kontrolleri
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const progressFill = document.getElementById('progressFill');
@@ -707,63 +676,8 @@
             }
         });
 
-        // Çubuğu tutup çekme (Drag / Seek) mantığı
-        let isDragging = false;
-
-        function setAudioProgress(e) {
-            const rect = progressBg.getBoundingClientRect();
-            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            if (clientX === undefined) return;
-            
-            let clickX = clientX - rect.left;
-            let width = rect.width;
-            
-            if (clickX < 0) clickX = 0;
-            if (clickX > width) clickX = width;
-            
-            const percentage = clickX / width;
-            progressFill.style.width = `${percentage * 100}%`;
-            
-            if (audio.duration) {
-                audio.currentTime = percentage * audio.duration;
-            }
-        }
-
-        progressBg.addEventListener('mousedown', (e) => {
-            e.stopPropagation();
-            isDragging = true;
-            setAudioProgress(e);
-        });
-
-        window.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                setAudioProgress(e);
-            }
-        });
-
-        window.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-
-        // Mobil dokunma desteği
-        progressBg.addEventListener('touchstart', (e) => {
-            e.stopPropagation();
-            isDragging = true;
-            setAudioProgress(e);
-        });
-
-        window.addEventListener('touchmove', (e) => {
-            if (isDragging) {
-                setAudioProgress(e);
-            }
-        });
-
-        window.addEventListener('touchend', () => {
-            isDragging = false;
-        });
-
         audio.addEventListener('timeupdate', () => {
-            if (!isDragging && audio.duration) {
+            if (audio.duration) {
                 const pct = (audio.currentTime / audio.duration) * 100;
                 progressFill.style.width = `${pct}%`;
 
@@ -776,6 +690,16 @@
                 let dS = Math.floor(audio.duration % 60);
                 if (dS < 10) dS = `0${dS}`;
                 durTime.innerText = `${dM}:${dS}`;
+            }
+        });
+
+        progressBg.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const rect = progressBg.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const width = rect.width;
+            if (audio.duration) {
+                audio.currentTime = (clickX / width) * audio.duration;
             }
         });
 
