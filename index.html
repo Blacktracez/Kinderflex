@@ -43,6 +43,50 @@
             pointer-events: none;
         }
 
+        /* CLICK TO ENTER OVERLAY */
+        #enterOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #030303;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999999;
+            cursor: pointer !important;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .enter-content {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            color: #ff0033;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(255, 0, 51, 0.8), 0 0 40px rgba(255, 0, 51, 0.4);
+            animation: pulseGlow 1.5s infinite alternate;
+            border: 2px solid rgba(255, 0, 51, 0.5);
+            padding: 20px 40px;
+            border-radius: 16px;
+            background: rgba(255, 0, 51, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 0, 51, 0.4); }
+            100% { transform: scale(1.05); box-shadow: 0 0 35px rgba(255, 0, 51, 0.8); }
+        }
+
+        .fade-out {
+            opacity: 0;
+            transform: scale(1.1);
+            pointer-events: none;
+        }
+
         /* 3D PARALLAX CARD WRAPPER */
         .card-wrapper {
             transition: transform 0.1s ease-out;
@@ -51,6 +95,14 @@
             padding: 20px;
             width: 100%;
             max-width: 480px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s;
+        }
+
+        .card-wrapper.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .main-card {
@@ -427,6 +479,11 @@
 </head>
 <body>
 
+    <!-- Click To Enter Ekranı -->
+    <div id="enterOverlay">
+        <div class="enter-content">CLICK TO ENTER</div>
+    </div>
+
     <div class="custom-cursor" id="cursor"></div>
     <div class="ambient-glow"></div>
 
@@ -434,7 +491,7 @@
     <div class="card-wrapper" id="cardWrapper">
         <div class="main-card">
 
-            <!-- Profil Resmi (Güncellendi) -->
+            <!-- Profil Resmi -->
             <div class="avatar-box" data-tooltip="Kinderflex">
                 <img src="https://github.com/user-attachments/assets/00dad49c-fba4-4091-b866-acbe442ffbad" alt="Kinderflex">
             </div>
@@ -488,7 +545,7 @@
                 </a>
             </div>
 
-            <!-- Müzik Çalar Tasarımı (Keso Dayı PP ve Aktif İleri/Geri Tuşları) -->
+            <!-- Müzik Çalar Tasarımı -->
             <div class="spotify-player">
                 <img src="https://github.com/user-attachments/assets/c7a8e53d-8c54-4936-ad02-39c96d11e7e7" alt="KESO DAYI" class="player-cover">
                 
@@ -542,6 +599,27 @@
         window.addEventListener('click', playMechanicalSwitch);
         window.addEventListener('keydown', playMechanicalSwitch);
 
+        // Click to Enter Mantığı
+        const enterOverlay = document.getElementById('enterOverlay');
+        const cardWrapper = document.getElementById('cardWrapper');
+        const audio = document.getElementById('audio');
+        const playBtn = document.getElementById('playBtn');
+
+        enterOverlay.addEventListener('click', () => {
+            playMechanicalSwitch();
+            enterOverlay.classList.add('fade-out');
+            cardWrapper.classList.add('visible');
+            
+            // Müziği başlat
+            audio.play().then(() => {
+                playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+            }).catch(() => {});
+
+            setTimeout(() => {
+                enterOverlay.style.display = 'none';
+            }, 600);
+        });
+
         // Views Sayacı
         const START_VIEWS = 25432;
         function initViews() {
@@ -558,7 +636,6 @@
         initViews();
 
         // 3D Tilt Efekti
-        const cardWrapper = document.getElementById('cardWrapper');
         const cursor = document.getElementById('cursor');
 
         function handleMove(x, y) {
@@ -585,24 +662,12 @@
         });
 
         // Müzik Çalar ve İleri / Geri Kontrolleri
-        const audio = document.getElementById('audio');
-        const playBtn = document.getElementById('playBtn');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const progressFill = document.getElementById('progressFill');
         const progressBg = document.getElementById('progressBg');
         const currTime = document.getElementById('currTime');
         const durTime = document.getElementById('durTime');
-
-        function startAudio() {
-            if (audio.paused) {
-                audio.play().then(() => {
-                    playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-                }).catch(() => {});
-            }
-        }
-        document.body.addEventListener('click', startAudio, { once: true });
-        document.body.addEventListener('touchstart', startAudio, { once: true });
 
         playBtn.addEventListener('click', (e) => {
             e.stopPropagation();
