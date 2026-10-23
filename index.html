@@ -596,19 +596,36 @@
             }).catch(() => {});
         });
 
-        // Geliştirilmiş Views (Görüntülenme) Sayacı Mantığı
+        // Geliştirilmiş IP ve Cihaz Tabanlı Views (Görüntülenme) Sayacı Mantığı
         const START_VIEWS = 25432;
-        function initViews() {
-            // Her farklı IP / tarayıcı oturumunu simüle etmek için session bazlı artış kontrolü
-            let sessionCounted = sessionStorage.getItem('kf_session_viewed');
-            let totalViews = parseInt(localStorage.getItem('kf_global_views')) || START_VIEWS;
+        async function initViews() {
+            try {
+                // Gerçek IP adresini öğrenmek için harici servis sorgusu
+                let ipRes = await fetch('https://api.ipify.org?format=json').then(r => r.json()).catch(() => null);
+                let clientIP = ipRes ? ipRes.ip : 'local_fallback_ip';
 
-            if (!sessionCounted) {
-                totalViews += 1;
-                sessionStorage.setItem('kf_session_viewed', 'true');
-                localStorage.setItem('kf_global_views', totalViews);
+                let totalViews = parseInt(localStorage.getItem('kf_global_views')) || START_VIEWS;
+                let countedIPs = JSON.parse(localStorage.getItem('kf_counted_ips') || '[]');
+
+                // Eğer bu IP daha önce sayılmadıysa
+                if (!countedIPs.includes(clientIP)) {
+                    totalViews += 1;
+                    countedIPs.push(clientIP);
+                    localStorage.setItem('kf_global_views', totalViews);
+                    localStorage.setItem('kf_counted_ips', JSON.stringify(countedIPs));
+                }
+
+                document.getElementById('views').innerText = totalViews.toLocaleString();
+            } catch (err) {
+                // Her ihtimale karşı hata durumunda standart akış
+                let totalViews = parseInt(localStorage.getItem('kf_global_views')) || START_VIEWS;
+                if (!sessionStorage.getItem('kf_fallback_counted')) {
+                    totalViews += 1;
+                    sessionStorage.setItem('kf_fallback_counted', 'true');
+                    localStorage.setItem('kf_global_views', totalViews);
+                }
+                document.getElementById('views').innerText = totalViews.toLocaleString();
             }
-            document.getElementById('views').innerText = totalViews.toLocaleString();
         }
         initViews();
 
